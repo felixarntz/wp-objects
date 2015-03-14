@@ -25,6 +25,9 @@ class User extends Item {
 		}
 
 		if ( $id !== null ) {
+			if ( is_object( $id ) && is_a( $id, '\WP_User' ) ) {
+				return $id;
+			}
 			return get_user_by( 'id', $id );
 		}
 
