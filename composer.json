@@ -2,12 +2,20 @@
   "name": "felixarntz/wp-objects",
   "description": "This plugin contains classes to handle WordPress posts, terms and users in an object-oriented approach.",
   "version": "1.0.0",
-  "license": "GPL-2.0",
-  "type": "wordpress-plugin",
+  "license": "GPL-3.0",
+  "type": "wordpress-muplugin",
   "keywords": [
-    "wordpress", "plugin", "objects", "oo", "object-oriented"
+    "wordpress",
+    "plugin",
+    "muplugin",
+    "objects",
+    "oo",
+    "object-oriented",
+    "post",
+    "term",
+    "user"
   ],
-  "homepage": "http://wordpress.org/plugins/wp-objects/",
+  "homepage": "https://github.com/felixarntz/wp-objects/",
   "authors": [
     {
       "name": "Felix Arntz",
@@ -19,6 +27,14 @@
   "support": {
     "email": "felix-arntz@leaves-and-love.net",
     "issues": "https://github.com/felixarntz/wp-objects/issues"
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "autoload": {
+    "psr-4": {
+      "WPOO\\": "inc/WPOO/"
+    }
   },
   "require": {
     "composer/installers": "~1.0"

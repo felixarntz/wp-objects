@@ -1,16 +1,16 @@
 <?php
 /*
 Plugin Name: WP Objects
-Plugin URI: http://wordpress.org/plugins/wp-objects/
+Plugin URI: https://github.com/felixarntz/wp-objects/
 Description: This plugin contains classes to handle WordPress posts, terms and users in an object-oriented approach.
 Version: 1.0.0
 Author: Felix Arntz
 Author URI: http://leaves-and-love.net
-License: GNU General Public License v2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: wpoo
+License: GNU General Public License v3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
+Text Domain: wp-objects
 Domain Path: /languages/
-Tags: wordpress, plugin, objects, oo, object-oriented
+Tags: wordpress, plugin, muplugin, objects, oo, object-oriented, post, term, user
 */
 /**
  * @package WPOO
@@ -18,27 +18,49 @@ Tags: wordpress, plugin, objects, oo, object-oriented
  * @author Felix Arntz <felix-arntz@leaves-and-love.net>
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die();
+}
+
 define( 'WPOO_VERSION', '1.0.0' );
-define( 'WPOO_REQUIRED_WP', '3.5' );
-define( 'WPOO_REQUIRED_PHP', '5.3.0' );
-
-define( 'WPOO_NAME', 'WP Objects' );
-define( 'WPOO_MAINFILE', __FILE__ );
-define( 'WPOO_BASENAME', plugin_basename( WPOO_MAINFILE ) );
-define( 'WPOO_PATH', untrailingslashit( plugin_dir_path( WPOO_MAINFILE ) ) );
-define( 'WPOO_URL', untrailingslashit( plugin_dir_url( WPOO_MAINFILE ) ) );
-
-require_once WPOO_PATH . '/inc/functions.php';
-
-define( 'WPOO_RUNNING', wpoo_version_check() );
 
 function wpoo_init() {
-	load_plugin_textdomain( 'wpoo', false, dirname( WPOO_BASENAME ) . '/languages/' );
+	global $wp_version;
 
-	if ( WPOO_RUNNING > 0 ) {
-		spl_autoload_register( 'wpoo_autoload', true, true );
-	} else {
-		add_action( 'admin_notices', 'wpoo_display_version_error_notice' );
+	load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
+	if ( 0 > version_compare( phpversion(), '5.3.0' ) ) {
+		add_action( 'admin_notices', 'wpoo_display_phpversion_error_notice' );
+		return;
+	}
+
+	if ( 0 > version_compare( $wp_version, '4.4.0' ) ) {
+		add_action( 'admin_notices', 'wpoo_display_wpversion_error_notice' );
+		return;
+	}
+
+	if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+		require_once dirname( __FILE__ ) . '/vendor/autoload.php';
 	}
 }
 add_action( 'plugins_loaded', 'wpoo_init' );
+
+function wpoo_display_phpversion_error_notice() {
+	echo '<div class="error">';
+	echo '<p>' . sprintf( __( 'Fatal problem with %s:', 'wp-objects' ), '<strong>WP Objects</strong>' ) . '</p>';
+	echo '<p>';
+	printf( __( 'The plugin requires %1$s version %2$s. However, you are currently using version %3$s.', 'wp-objects' ), 'PHP', '5.3.0', phpversion() );
+	echo '</p>';
+	echo '</div>';
+}
+
+function wpoo_display_wpversion_error_notice() {
+	global $wp_version;
+
+	echo '<div class="error">';
+	echo '<p>' . sprintf( __( 'Fatal problem with %s:', 'wp-objects' ), '<strong>WP Objects</strong>' ) . '</p>';
+	echo '<p>';
+	printf( __( 'The plugin requires %1$s version %2$s. However, you are currently using version %3$s.', 'wp-objects' ), 'WordPress', '4.4.0', $wp_version );
+	echo '</p>';
+	echo '</div>';
+}

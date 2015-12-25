@@ -4,14 +4,22 @@
   "version": "1.0.0",
   "description": "This plugin contains classes to handle WordPress posts, terms and users in an object-oriented approach.",
   "keywords": [
-    "wordpress", "plugin", "objects", "oo", "object-oriented"
+    "wordpress",
+    "plugin",
+    "muplugin",
+    "objects",
+    "oo",
+    "object-oriented",
+    "post",
+    "term",
+    "user"
   ],
   "author": {
     "name": "Felix Arntz",
     "email": "felix-arntz@leaves-and-love.net",
     "url": "http://leaves-and-love.net"
   },
-  "homepage": "http://wordpress.org/plugins/wp-objects/",
+  "homepage": "https://github.com/felixarntz/wp-objects/",
   "repository": {
     "type": "git",
     "url": "git://github.com/felixarntz/wp-objects.git"
@@ -20,9 +28,9 @@
     "url" : "https://github.com/felixarntz/wp-objects/issues"
   },
   "license": {
-    "type": "GPL-2.0",
-    "name": "GNU General Public License v2",
-    "url": "http://www.gnu.org/licenses/gpl-2.0.html"
+    "type": "GPL-3.0",
+    "name": "GNU General Public License v3",
+    "url": "http://www.gnu.org/licenses/gpl-3.0.html"
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -31,6 +39,6 @@
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "~0.6.0",
     "grunt-text-replace": "~0.4.0",
-    "grunt-wp-i18n": "~0.4.9"
+    "grunt-wp-i18n": "~0.5.3"
   }
 }

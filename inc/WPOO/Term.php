@@ -7,16 +7,22 @@
 
 namespace WPOO;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die();
+}
+
 class Term extends Item {
 
 	protected static $item_type = 'term';
 
 	protected static $item_id_field_name = 'term_id';
 
-	protected static function getItem( $id = null ) {
-		global $wpdb;
+	protected static function get_item( $id = null ) {
+		if ( is_object( $id ) && is_a( $id, 'WP_Term' ) ) {
+			return $id;
+		}
 
-		if ( $id === null ) {
+		if ( null === $id ) {
 			if ( is_category() || is_tag() || is_tax() ) {
 				$id = get_queried_object();
 			} elseif ( is_singular() ) {
@@ -31,29 +37,55 @@ class Term extends Item {
 			}
 		}
 
-		if ( $id !== null ) {
-			if ( is_object( $id ) ) {
-				if ( isset( $id->term_id ) ) {
-					return $id;
-				} else {
-					return null;
-				}
-			}
-			$_taxonomy = $wpdb->get_row( $wpdb->prepare( "SELECT t.* FROM $wpdb->term_taxonomy AS t WHERE t.term_id = %d LIMIT 1", $id ) );
-
-			return get_term( $id, $_taxonomy->taxonomy );
+		if ( is_numeric( $id ) ) {
+			return get_term( $id );
 		}
 
 		return null;
 	}
 
-	protected $taxonomy = '';
-
 	protected function __construct( $item ) {
-		parent::__construct();
+		parent::__construct( $item );
+	}
 
-		if ( $this->taxonomy == '' ) {
-			$this->taxonomy = $this->item->taxonomy;
+	public function get_data( $field, $formatted = false ) {
+		$data = null;
+
+		if ( isset( $this->item->$field ) ) {
+			$data = $this->item->$field;
+		} elseif ( strpos( $field, 'term_' ) !== 0 ) {
+			$field = 'term_' . $field;
+			if ( isset( $this->item->$field ) ) {
+				$data = $this->item->$field;
+			}
 		}
+
+		//TODO: formatting
+
+		return $data;
+	}
+
+	public function get_meta( $field = '', $single = null, $formatted = false ) {
+		if ( $field ) {
+			if ( function_exists( 'wpptd_get_term_meta_value' ) ) {
+				return wpptd_get_term_meta_value( $this->item->ID, $field, $single, $formatted );
+			}
+			if ( ! $single ) {
+				$single = false;
+			}
+			return get_term_meta( $this->item->ID, $field, $single );
+		} else {
+			if ( function_exists( 'wpptd_get_term_meta_values' ) ) {
+				return wpptd_get_term_meta_values( $this->item->ID, $single, $formatted );
+			}
+			return get_term_meta( $this->item->ID );
+		}
+	}
+
+	public function get_taxonomy( $output = 'name' ) {
+		if ( 'object' === $output ) {
+			return get_taxonomy( $this->item->taxonomy );
+		}
+		return $this->item->taxonomy;
 	}
 }

@@ -21,6 +21,13 @@ nbproject/
 node_modules/*
 
 ############
+## Vendor
+############
+
+vendor/
+!assets/vendor/
+
+############
 ## OSes
 ############
 

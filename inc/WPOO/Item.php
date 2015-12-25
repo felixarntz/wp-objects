@@ -7,6 +7,10 @@
 
 namespace WPOO;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die();
+}
+
 abstract class Item {
 
 	protected static $items = array();
@@ -24,7 +28,7 @@ abstract class Item {
 		}
 
 		if ( $id === null ) {
-			$item = static::getItem( $id );
+			$item = static::get_item( $id );
 
 			if ( $item !== null ) {
 				$id_field_name = static::$item_id_field_name;
@@ -37,7 +41,7 @@ abstract class Item {
 		if ( $id !== null ) {
 			if ( ! isset( self::$items[ static::$item_type ][ $id ] ) ) {
 				if ( $item === null ) {
-					$item = static::getItem( $id );
+					$item = static::get_item( $id );
 				}
 
 				if ( $item !== null ) {
@@ -53,20 +57,22 @@ abstract class Item {
 		return null;
 	}
 
-	protected static function getItem( $id = null ) {
+	protected static function get_item( $id = null ) {
 		return null;
 	}
 
-	protected $id = 0;
 	protected $item = null;
 
 	protected function __construct( $item ) {
-		$id_field_name = static::$item_id_field_name;
-		$this->id = $item->$id_field_name;
 		$this->item = $item;
 	}
 
-	public function getID() {
-		return $this->id;
+	public function get_ID() {
+		$id_field_name = static::$item_id_field_name;
+		return absint( $item->$id_field_name );
 	}
+
+	public abstract function get_data( $field, $formatted = false );
+
+	public abstract function get_meta( $field = '', $single = null, $formatted = false );
 }

@@ -11,9 +11,9 @@ module.exports = function(grunt) {
 						'Author URI: <%= pkg.author.url %>\n' +
 						'License: <%= pkg.license.name %>\n' +
 						'License URI: <%= pkg.license.url %>\n' +
-						'Text Domain: wpoo\n' +
+						'Text Domain: wp-objects\n' +
 						'Domain Path: /languages/\n' +
-						'Tags: wordpress, plugin, objects, oo, object-oriented\n' +
+						'Tags: <%= pkg.keywords.join(", ") %>\n' +
 						'*/',
 		fileheader: '/**\n' +
 					' * @package WPOO\n' +
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 
 		clean: {
 			translation: [
-				'languages/wpoo.pot'
+				'languages/wp-objects.pot'
 			]
 		},
 
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
 				options: {
 					domainPath: '/languages',
 					potComments: 'Copyright (c) 2014-<%= grunt.template.today("yyyy") %> <%= pkg.author.name %>',
-					potFilename: 'wpoo.pot',
+					potFilename: 'wp-objects.pot',
 					potHeaders: {
 						'report-msgid-bugs-to': '<%= pkg.homepage %>',
 						'x-generator': 'grunt-wp-i18n 0.4.5',
