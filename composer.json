@@ -3,7 +3,7 @@
   "description": "This plugin contains classes to handle WordPress posts, terms and users in an object-oriented approach.",
   "version": "1.0.0",
   "license": "GPL-3.0",
-  "type": "wordpress-muplugin",
+  "type": "wordpress-plugin",
   "keywords": [
     "wordpress",
     "plugin",

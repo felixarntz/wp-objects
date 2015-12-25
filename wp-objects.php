@@ -24,10 +24,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'WPOO_VERSION', '1.0.0' );
 
+if ( file_exists( dirname( __FILE__ ) . '/wp-objects/languages/wp-objects.pot' ) ) {
+	define( 'WPOO_MUPLUGIN', true );
+} else {
+	define( 'WPOO_MUPLUGIN', false );
+}
+
 function wpoo_init() {
 	global $wp_version;
 
-	load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	if ( WPOO_MUPLUGIN ) {
+		load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/wp-objects/languages/' );
+	} else {
+		load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
 
 	if ( 0 > version_compare( phpversion(), '5.3.0' ) ) {
 		add_action( 'admin_notices', 'wpoo_display_phpversion_error_notice' );
@@ -39,8 +49,14 @@ function wpoo_init() {
 		return;
 	}
 
-	if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
-		require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+	if ( WPOO_MUPLUGIN ) {
+		if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php' ) ) {
+			require_once dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php';
+		}
+	} else {
+		if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+			require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+		}
 	}
 }
 add_action( 'plugins_loaded', 'wpoo_init' );
