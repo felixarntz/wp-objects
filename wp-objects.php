@@ -18,65 +18,34 @@ Tags: wordpress, plugin, muplugin, objects, oo, object-oriented, post, term, use
  * @author Felix Arntz <felix-arntz@leaves-and-love.net>
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) || defined( 'WPOO_VERSION' ) ) {
 	die();
 }
 
-define( 'WPOO_VERSION', '1.0.0' );
-
-if ( file_exists( dirname( __FILE__ ) . '/wp-objects/languages/wp-objects.pot' ) ) {
-	define( 'WPOO_MUPLUGIN', true );
-} else {
-	define( 'WPOO_MUPLUGIN', false );
-}
-
-function wpoo_init() {
-	global $wp_version;
-
-	if ( WPOO_MUPLUGIN ) {
-		load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/wp-objects/languages/' );
-	} else {
-		load_plugin_textdomain( 'wp-objects', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	if ( 0 > version_compare( phpversion(), '5.3.0' ) ) {
-		add_action( 'admin_notices', 'wpoo_display_phpversion_error_notice' );
-		return;
-	}
-
-	if ( 0 > version_compare( $wp_version, '4.4.0' ) ) {
-		add_action( 'admin_notices', 'wpoo_display_wpversion_error_notice' );
-		return;
-	}
-
-	if ( WPOO_MUPLUGIN ) {
-		if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php' ) ) {
+if ( ! class_exists( 'WPOO\App' ) ) {
+	if ( file_exists( dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php' ) ) {
+		if ( version_compare( phpversion(), '5.3.0' ) >= 0 ) {
 			require_once dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php';
+		} else {
+			require_once dirname( __FILE__ ) . '/wp-objects/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
 		}
-	} else {
-		if ( ! class_exists( 'WPOO\Item' ) && file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	} elseif ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+		if ( version_compare( phpversion(), '5.3.0' ) >= 0 ) {
 			require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+		} else {
+			require_once dirname( __FILE__ ) . '/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
 		}
 	}
 }
-add_action( 'plugins_loaded', 'wpoo_init' );
 
-function wpoo_display_phpversion_error_notice() {
-	echo '<div class="error">';
-	echo '<p>' . sprintf( __( 'Fatal problem with %s:', 'wp-objects' ), '<strong>WP Objects</strong>' ) . '</p>';
-	echo '<p>';
-	printf( __( 'The plugin requires %1$s version %2$s. However, you are currently using version %3$s.', 'wp-objects' ), 'PHP', '5.3.0', phpversion() );
-	echo '</p>';
-	echo '</div>';
-}
-
-function wpoo_display_wpversion_error_notice() {
-	global $wp_version;
-
-	echo '<div class="error">';
-	echo '<p>' . sprintf( __( 'Fatal problem with %s:', 'wp-objects' ), '<strong>WP Objects</strong>' ) . '</p>';
-	echo '<p>';
-	printf( __( 'The plugin requires %1$s version %2$s. However, you are currently using version %3$s.', 'wp-objects' ), 'WordPress', '4.4.0', $wp_version );
-	echo '</p>';
-	echo '</div>';
-}
+LaL_WP_Plugin_Loader::load_plugin( array(
+	'slug'				=> 'wp-objects',
+	'name'				=> 'WP Objects',
+	'version'			=> '1.0.0',
+	'main_file'			=> __FILE__,
+	'namespace'			=> 'WPOO',
+	'textdomain'		=> 'wp-objects',
+), array(
+	'phpversion'		=> '5.3.0',
+	'wpversion'			=> '4.4',
+) );
