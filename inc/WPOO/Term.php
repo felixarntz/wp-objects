@@ -70,17 +70,17 @@ if ( ! class_exists( 'WPOO\Term' ) ) {
 		public function get_meta( $field = '', $single = null, $formatted = false ) {
 			if ( $field ) {
 				if ( function_exists( 'wpptd_get_term_meta_value' ) ) {
-					return wpptd_get_term_meta_value( $this->item->ID, $field, $single, $formatted );
+					return wpptd_get_term_meta_value( $this->item->term_id, $field, $single, $formatted );
 				}
 				if ( ! $single ) {
 					$single = false;
 				}
-				return get_term_meta( $this->item->ID, $field, $single );
+				return get_term_meta( $this->item->term_id, $field, $single );
 			} else {
 				if ( function_exists( 'wpptd_get_term_meta_values' ) ) {
-					return wpptd_get_term_meta_values( $this->item->ID, $single, $formatted );
+					return wpptd_get_term_meta_values( $this->item->term_id, $single, $formatted );
 				}
-				return get_term_meta( $this->item->ID );
+				return get_term_meta( $this->item->term_id );
 			}
 		}
 

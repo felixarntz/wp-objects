@@ -71,7 +71,7 @@ if ( ! class_exists( 'WPOO\Item' ) ) {
 
 		public function get_ID() {
 			$id_field_name = static::$item_id_field_name;
-			return absint( $item->$id_field_name );
+			return absint( $this->item->$id_field_name );
 		}
 
 		public abstract function get_data( $field, $formatted = false );
