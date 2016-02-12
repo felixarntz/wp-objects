@@ -22,19 +22,17 @@ if ( ! defined( 'ABSPATH' ) || defined( 'WPOO_VERSION' ) ) {
 	die();
 }
 
-if ( ! class_exists( 'WPOO\App' ) ) {
+if ( version_compare( phpversion(), '5.3.0' ) >= 0 && ! class_exists( 'WPOO\App' ) ) {
 	if ( file_exists( dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php' ) ) {
-		if ( version_compare( phpversion(), '5.3.0' ) >= 0 ) {
-			require_once dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php';
-		} else {
-			require_once dirname( __FILE__ ) . '/wp-objects/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
-		}
+		require_once dirname( __FILE__ ) . '/wp-objects/vendor/autoload.php';
 	} elseif ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
-		if ( version_compare( phpversion(), '5.3.0' ) >= 0 ) {
-			require_once dirname( __FILE__ ) . '/vendor/autoload.php';
-		} else {
-			require_once dirname( __FILE__ ) . '/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
-		}
+		require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+	}
+} elseif ( ! class_exists( 'LaL_WP_Plugin_Loader' ) ) {
+	if ( file_exists( dirname( __FILE__ ) . '/wp-objects/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php' ) ) {
+		require_once dirname( __FILE__ ) . '/wp-objects/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
+	} elseif ( file_exists( dirname( __FILE__ ) . '/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php' ) ) {
+		require_once dirname( __FILE__ ) . '/vendor/felixarntz/leavesandlove-wp-plugin-util/leavesandlove-wp-plugin-loader.php';
 	}
 }
 
@@ -45,6 +43,7 @@ LaL_WP_Plugin_Loader::load_plugin( array(
 	'main_file'			=> __FILE__,
 	'namespace'			=> 'WPOO',
 	'textdomain'		=> 'wp-objects',
+	'is_library'		=> true,
 ), array(
 	'phpversion'		=> '5.3.0',
 	'wpversion'			=> '4.4',
