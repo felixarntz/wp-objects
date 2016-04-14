@@ -11,68 +11,72 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die();
 }
 
-abstract class Item {
+if ( ! class_exists( 'WPOO\Item' ) ) {
 
-	protected static $items = array();
+	abstract class Item {
 
-	protected static $item_type = '';
+		protected static $items = array();
 
-	protected static $item_id_field_name = '';
+		protected static $item_type = '';
 
-	public static function get( $id = null ) {
+		protected static $item_id_field_name = '';
 
-		$item = null;
+		public static function get( $id = null ) {
 
-		if ( ! isset( self::$items[ static::$item_type ] ) ) {
-			self::$items[ static::$item_type ] = array();
-		}
+			$item = null;
 
-		if ( $id === null ) {
-			$item = static::get_item( $id );
-
-			if ( $item !== null ) {
-				$id_field_name = static::$item_id_field_name;
-				if ( isset( $item->$id_field_name ) ) {
-					$id = $item->$id_field_name;
-				}
+			if ( ! isset( self::$items[ static::$item_type ] ) ) {
+				self::$items[ static::$item_type ] = array();
 			}
-		}
 
-		if ( $id !== null ) {
-			if ( ! isset( self::$items[ static::$item_type ][ $id ] ) ) {
-				if ( $item === null ) {
-					$item = static::get_item( $id );
-				}
+			if ( $id === null ) {
+				$item = static::get_item( $id );
 
 				if ( $item !== null ) {
-					self::$items[ static::$item_type ][ $id ] = new static( $item );
-				} else {
-					return null;
+					$id_field_name = static::$item_id_field_name;
+					if ( isset( $item->$id_field_name ) ) {
+						$id = $item->$id_field_name;
+					}
 				}
 			}
 
-			return self::$items[ static::$item_type ][ $id ];
+			if ( $id !== null ) {
+				if ( ! isset( self::$items[ static::$item_type ][ $id ] ) ) {
+					if ( $item === null ) {
+						$item = static::get_item( $id );
+					}
+
+					if ( $item !== null ) {
+						self::$items[ static::$item_type ][ $id ] = new static( $item );
+					} else {
+						return null;
+					}
+				}
+
+				return self::$items[ static::$item_type ][ $id ];
+			}
+
+			return null;
 		}
 
-		return null;
+		protected static function get_item( $id = null ) {
+			return null;
+		}
+
+		protected $item = null;
+
+		protected function __construct( $item ) {
+			$this->item = $item;
+		}
+
+		public function get_ID() {
+			$id_field_name = static::$item_id_field_name;
+			return absint( $this->item->$id_field_name );
+		}
+
+		public abstract function get_data( $field, $formatted = false );
+
+		public abstract function get_meta( $field = '', $single = null, $formatted = false );
 	}
 
-	protected static function get_item( $id = null ) {
-		return null;
-	}
-
-	protected $item = null;
-
-	protected function __construct( $item ) {
-		$this->item = $item;
-	}
-
-	public function get_ID() {
-		$id_field_name = static::$item_id_field_name;
-		return absint( $item->$id_field_name );
-	}
-
-	public abstract function get_data( $field, $formatted = false );
-
-	public abstract function get_meta( $field = '', $single = null, $formatted = false );
 }
