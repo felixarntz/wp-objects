@@ -236,7 +236,7 @@ if ( ! class_exists( 'WPOO\Post' ) ) {
 		}
 
 		public function get_classes( $class = '', $formatted = false ) {
-			$classes = get_classes( $class, $this->item );
+			$classes = get_post_class( $class, $this->item );
 			if ( $formatted ) {
 				return 'class="' . join( ' ', $classes ) . '"';
 			}
