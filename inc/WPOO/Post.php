@@ -185,19 +185,19 @@ if ( ! class_exists( 'WPOO\Post' ) ) {
 			return get_user_by( 'id', $this->item->post_author );
 		}
 
-		public function has_post_thumbnail() {
+		public function has_thumbnail() {
 			return has_post_thumbnail( $this->item );
 		}
 
-		public function get_post_thumbnail( $size = 'post-thumbnail', $attr = '' ) {
+		public function get_thumbnail( $size = 'post-thumbnail', $attr = '' ) {
 			return get_the_post_thumbnail( $this->item, $size, $attr );
 		}
 
-		public function get_post_thumbnail_id() {
+		public function get_thumbnail_id() {
 			return get_post_thumbnail_id( $this->item );
 		}
 
-		public function get_post_thumbnail_url( $size = 'post-thumbnail' ) {
+		public function get_thumbnail_url( $size = 'post-thumbnail' ) {
 			return get_the_post_thumbnail_url( $this->item, $size );
 		}
 
@@ -235,8 +235,8 @@ if ( ! class_exists( 'WPOO\Post' ) ) {
 			return get_comments_link( $this->item );
 		}
 
-		public function get_post_class( $class = '', $formatted = false ) {
-			$classes = get_post_class( $class, $this->item );
+		public function get_classes( $class = '', $formatted = false ) {
+			$classes = get_classes( $class, $this->item );
 			if ( $formatted ) {
 				return 'class="' . join( ' ', $classes ) . '"';
 			}
