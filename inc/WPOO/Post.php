@@ -126,6 +126,9 @@ class Post extends Item {
 						$data = date_i18n( get_option( 'date_format' ), strtotime( $this->item->$field ) );
 					}
 					break;
+				case 'guid':
+					$data = get_the_guid( $this->item );
+					break;
 				default:
 			}
 		}
@@ -133,9 +136,10 @@ class Post extends Item {
 		return $data;
 	}
 
-	public function get_meta( $field = '', $single = null, $formatted = false ) {
+	public function get_meta( $field = '', $single = false, $formatted = false ) {
+		$use_wpptd = null === $single || $formatted;
 		if ( $field ) {
-			if ( function_exists( 'wpptd_get_post_meta_value' ) ) {
+			if ( $use_wpptd && function_exists( 'wpptd_get_post_meta_value' ) ) {
 				return wpptd_get_post_meta_value( $this->item->ID, $field, $single, $formatted );
 			}
 			if ( ! $single ) {
@@ -143,7 +147,7 @@ class Post extends Item {
 			}
 			return get_post_meta( $this->item->ID, $field, $single );
 		} else {
-			if ( function_exists( 'wpptd_get_post_meta_values' ) ) {
+			if ( $use_wpptd && function_exists( 'wpptd_get_post_meta_values' ) ) {
 				return wpptd_get_post_meta_values( $this->item->ID, $single, $formatted );
 			}
 			return get_post_meta( $this->item->ID );
@@ -155,5 +159,93 @@ class Post extends Item {
 			return get_post_type_object( $this->item->post_type );
 		}
 		return $this->item->post_type;
+	}
+
+	public function get_url() {
+		if ( 'attachment' === $this->item->post_type ) {
+			return get_attachment_link( $this->item );
+		}
+		return get_permalink( $this->item );
+	}
+
+	public function get_taxonomies( $output = 'names' ) {
+		return get_object_taxonomies( $this->item, $output );
+	}
+
+	public function get_terms( $taxonomy ) {
+		return get_the_terms( $this->item, $taxonomy );
+	}
+
+	public function get_author() {
+		if ( ! $this->supports( 'author' ) ) {
+			return null;
+		}
+		return get_user_by( 'id', $this->item->post_author );
+	}
+
+	public function has_post_thumbnail() {
+		return has_post_thumbnail( $this->item );
+	}
+
+	public function get_post_thumbnail( $size = 'post-thumbnail', $attr = '' ) {
+		return get_the_post_thumbnail( $this->item, $size, $attr );
+	}
+
+	public function get_post_thumbnail_id() {
+		return get_post_thumbnail_id( $this->item );
+	}
+
+	public function get_post_thumbnail_url( $size = 'post-thumbnail' ) {
+		return get_the_post_thumbnail_url( $this->item, $size );
+	}
+
+	public function get_comments( $type = 'all' ) {
+		if ( ! $this->supports( 'comments' ) ) {
+			return array();
+		}
+
+		return get_comments( array(
+			'post_id'	=> $this->item->id,
+			'type'		=> $type,
+		) );
+	}
+
+	public function get_comments_number( $formatted = false ) {
+		global $post;
+
+		if ( $formatted ) {
+			if ( $post->ID === $this->item->ID ) {
+				return get_comments_number_text();
+			} else {
+				$old_post = $post;
+
+				$post = $this->item;
+				$output = get_comments_number_text();
+				$post = $old_post;
+
+				return $output;
+			}
+		}
+		return get_comments_number( $this->item );
+	}
+
+	public function get_comments_url() {
+		return get_comments_link( $this->item );
+	}
+
+	public function get_post_class( $class = '', $formatted = false ) {
+		$classes = get_post_class( $class, $this->item );
+		if ( $formatted ) {
+			return 'class="' . join( ' ', $classes ) . '"';
+		}
+		return $classes;
+	}
+
+	public function is_sticky() {
+		return is_sticky( $this->item->ID );
+	}
+
+	public function supports( $feature ) {
+		return post_type_supports( $this->item->post_type, $feature );
 	}
 }

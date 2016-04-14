@@ -58,9 +58,10 @@ class User extends Item {
 		return $data;
 	}
 
-	public function get_meta( $field = '', $single = null, $formatted = false ) {
+	public function get_meta( $field = '', $single = false, $formatted = false ) {
+		$use_wpud = null === $single || $formatted;
 		if ( $field ) {
-			if ( function_exists( 'wpud_get_user_meta_value' ) ) {
+			if ( $use_wpud && function_exists( 'wpud_get_user_meta_value' ) ) {
 				return wpud_get_user_meta_value( $this->item->ID, $field, $single, $formatted );
 			}
 			if ( ! $single ) {
@@ -68,7 +69,7 @@ class User extends Item {
 			}
 			return get_user_meta( $this->item->ID, $field, $single );
 		} else {
-			if ( function_exists( 'wpud_get_user_meta_values' ) ) {
+			if ( $use_wpud && function_exists( 'wpud_get_user_meta_values' ) ) {
 				return wpud_get_user_meta_values( $this->item->ID, $single, $formatted );
 			}
 			return get_user_meta( $this->item->ID );
@@ -80,5 +81,9 @@ class User extends Item {
 			return get_role( $this->item->roles[0] );
 		}
 		return $this->item->roles[0];
+	}
+
+	public function get_url() {
+		return get_author_posts_url( $this->item->ID );
 	}
 }

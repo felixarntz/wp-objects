@@ -65,9 +65,10 @@ class Term extends Item {
 		return $data;
 	}
 
-	public function get_meta( $field = '', $single = null, $formatted = false ) {
+	public function get_meta( $field = '', $single = false, $formatted = false ) {
+		$use_wpptd = null === $single || $formatted;
 		if ( $field ) {
-			if ( function_exists( 'wpptd_get_term_meta_value' ) ) {
+			if ( $use_wpptd && function_exists( 'wpptd_get_term_meta_value' ) ) {
 				return wpptd_get_term_meta_value( $this->item->ID, $field, $single, $formatted );
 			}
 			if ( ! $single ) {
@@ -75,7 +76,7 @@ class Term extends Item {
 			}
 			return get_term_meta( $this->item->ID, $field, $single );
 		} else {
-			if ( function_exists( 'wpptd_get_term_meta_values' ) ) {
+			if ( $use_wpptd && function_exists( 'wpptd_get_term_meta_values' ) ) {
 				return wpptd_get_term_meta_values( $this->item->ID, $single, $formatted );
 			}
 			return get_term_meta( $this->item->ID );
@@ -87,5 +88,43 @@ class Term extends Item {
 			return get_taxonomy( $this->item->taxonomy );
 		}
 		return $this->item->taxonomy;
+	}
+
+	public function get_url() {
+		return get_term_link( $this->item );
+	}
+
+	public function get_post_types( $output = 'names' ) {
+		if ( 'names' === $output ) {
+			$post_types = array();
+			foreach ( get_post_types( array(), 'objects' ) as $post_type => $post_type_object ) {
+				if ( is_object_in_taxonomy( $post_type, $this->item->taxonomy ) ) {
+					$post_types[] = $post_type;
+				}
+			}
+			return $post_types;
+		}
+
+		$post_type_objects = array();
+		foreach ( get_post_types( array(), 'objects' ) as $post_type => $post_type_object ) {
+			if ( is_object_in_taxonomy( $post_type, $this->item->taxonomy ) ) {
+				$post_type_objects[ $post_type ] = $post_type_object;
+			}
+		}
+		return $post_type_objects;
+	}
+
+	public function get_posts( $post_type = 'any' ) {
+		return get_posts( array(
+			'posts_per_page'	=> -1,
+			'post_type'			=> $post_type,
+			'tax_query'			=> array(
+				array(
+					'taxonomy'		=> $this->item->taxonomy,
+					'field'			=> 'term_id',
+					'terms'			=> $this->item->term_id,
+				),
+			),
+		) );
 	}
 }
